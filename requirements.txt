@@ -1,4 +1,8 @@
 matplotlib==3.10.6
 pandas==2.3.0
 joblib==1.5.1
+streamlit-shap
+shap
+syllapy
+nltk
 scikit-learn==1.7.0
