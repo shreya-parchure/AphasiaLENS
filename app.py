@@ -25,9 +25,11 @@ cmu_dict = cmudict.dict()
 feature_names = model.feature_names_in_
 
 # Streamlit app layout
-st.title('XAI Word level Aphasia Prediction')
-
-# Provide instructions for the user
+st.title('AphasiaLENS (Lexical Estimator of Naming in Speech)')
+st.subheader('Word-by-word personalized predictions of naming ability in chronic post stroke aphasia, using clinically available inputs and explainable machine learning')
+             
+# instructions for the user
+st.divider()
 st.write('Please provide the input values below, and the model will predict the output.')
 
 # Create a dictionary to hold the input values
@@ -115,11 +117,12 @@ if st.button('Make Prediction'):
     result = "Correct" if prediction[0] == 1 else "Wrong"
 
     # Display the result
+    st.divider()
     st.write(f'Prediction: {result}')
 
     # Display the model's confidence (probability)
     st.write(f'Model Confidence (Probability): {prediction_proba[0][prediction[0]]:.4f}')
-
+    st.divider()
 
     # Now, we create the SHAP explainer and plot
     explainer = shap.TreeExplainer(model)
@@ -127,5 +130,5 @@ if st.button('Make Prediction'):
 
     # Plot SHAP summary plot
     st.subheader('Feature Importance Summary Plot')
-    shap.summary_plot(shap_values[:,:,1], input_features, feature_names=feature_names, plot_type="bar", show=False)
+    shap.summary_plot(shap_values[:,:,1], input_features, feature_names=feature_labels, plot_type="bar", show=False)
     st.pyplot(plt.gcf())
