@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pickle
 import numpy as np
@@ -39,10 +38,10 @@ input_values = {}
 feature_labels = {
     'MPO': 'Months Since Stroke',
     'Yrs Edu': 'Years of Education',
-    'Age': 'Age',
+    'Age': 'Current Age in years',
     'NWF_WAB_Avg': 'Western Aphasia Battery Naming Subscore (0-10)',
     'Avg_WAB_AQ ': 'Western Aphasia Battery Aphasia Quotient Score (0-100)',
-    'Lesion_Volume': 'Lesion Volume',
+    'Lesion_Volume': 'Lesion Volume (range from none to a hemisphere)',
     'Freq_Cond': 'Frequency Condition (High/Low)',
     'Syllables_avg (SyllaPy)': 'Syllables in Word',
     'Phonemes_avg (CMUDict)': 'Phonemes in Word'
@@ -66,7 +65,7 @@ for feature in feature_names:
 
     # If the feature is 'Freq_Cond', we ask the user to input a word
     elif feature == 'Freq_Cond':
-        word_input = st.text_input("Enter a word to determine Frequency Condition")
+        word_input = st.text_input("Enter the word to be spoken")
         if word_input:
             # Compute frequency condition based on whether word is in the backend list
             if word_input.lower() in [w.lower() for w in word_list]:
@@ -88,7 +87,7 @@ for feature in feature_names:
                 input_values[feature] = phonemes_count
 
 # Button to trigger prediction
-if st.button('Make Prediction'):
+if st.button('Predict Speech Accuracy'):
     # Prepare the input data for prediction
     encoded_features = []
 
