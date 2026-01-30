@@ -47,6 +47,9 @@ feature_labels = {
     'Phonemes_avg (CMUDict)': 'Phonemes in Word'
 }
 
+feature_names_shap = ['Months Since Stroke','Years of Education','Age','WAB Naming Subscore','WAB Aphasia Quotient','Lesion_Volume',
+                      'Word Frequency (High/Low)','# of Syllables', '# of Phonemes']
+
 # Loop through each feature and create the appropriate input field
 for feature in feature_names:
     # If the feature is 'MPO', 'Yrs Edu', 'Age', 'Lesion_Volume', we use a number input
@@ -129,5 +132,5 @@ if st.button('Predict Speech Accuracy'):
 
     # Plot SHAP summary plot
     st.subheader('Feature Importance Summary Plot')
-    shap.summary_plot(shap_values[:,:,1], input_features, feature_names=feature_names, plot_type="bar", show=False)
+    shap.summary_plot(shap_values[:,:,1], input_features, feature_names=feature_names_shap, plot_type="bar", show=False)
     st.pyplot(plt.gcf())
