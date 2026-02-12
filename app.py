@@ -25,20 +25,20 @@ feature_names = model.feature_names_in_
 
 # Streamlit app layout
 st.title('AphasiaLENS (Lexical Estimator of Naming in Speech)')
-st.subheader('Word-by-word personalized predictions of naming ability in chronic post stroke aphasia, using clinically available inputs and explainable machine learning')
+st.write('Word-by-word personalized predictions of naming ability in chronic post stroke aphasia, using clinically available inputs and explainable machine learning')
              
 # instructions for the user
 st.divider()
-st.write('Please provide the input values below, and the model will predict the output.')
+st.subheader('Please input the information for person with aphasia')
 
 # Create a dictionary to hold the input values
 input_values = {}
 
 # Mapping feature names to user-friendly labels
 feature_labels = {
-    'MPO': 'Months Since Stroke (values over six)',
-    'Yrs Edu': 'Years of Education (count from first grade)',
-    'Age': 'Current Age (values in years)',
+    'MPO': 'Months Since Stroke',
+    'Yrs Edu': 'Years of Education (counted from first grade)',
+    'Age': 'Current Age (in years, range 35-95)',
     'NWF_WAB_Avg': 'Western Aphasia Battery Naming Subscore (0-10)',
     'Avg_WAB_AQ ': 'Western Aphasia Battery Aphasia Quotient Score (0-100)',
     'Lesion_Volume': 'Lesion Volume (range from none to entire left hemisphere)',
