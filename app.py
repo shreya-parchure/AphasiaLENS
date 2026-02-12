@@ -41,7 +41,7 @@ feature_labels = {
     'Age': 'Current Age in years',
     'NWF_WAB_Avg': 'Western Aphasia Battery Naming Subscore (0-10)',
     'Avg_WAB_AQ ': 'Western Aphasia Battery Aphasia Quotient Score (0-100)',
-    'Lesion_Volume': 'Lesion Volume (range from none to a hemisphere)',
+    'Lesion_Volume': 'Lesion Volume (range from none to entire left hemisphere)',
     'Freq_Cond': 'Frequency Condition (High/Low)',
     'Syllables_avg (SyllaPy)': 'Syllables in Word',
     'Phonemes_avg (CMUDict)': 'Phonemes in Word'
@@ -134,5 +134,5 @@ if st.button('Predict Speech Accuracy'):
     # Plot SHAP summary plot
     st.subheader('Feature Importances for this Prediction')
     shap.summary_plot(shap_values[:,:,1], input_features, feature_names=feature_names_shap, plot_type="bar", show=False)
-    plt.tight_layout()
+    plt.gcf().tight_layout()
     st.pyplot(plt.gcf())
