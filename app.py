@@ -91,6 +91,9 @@ for feature in feature_names:
 
 # Button to trigger prediction
 if st.button('Predict Speech Accuracy'):
+    if not word_input or word_input.strip() == "":
+        st.warning("Please enter a word before making a prediction.")
+        st.stop()
     # Prepare the input data for prediction
     encoded_features = []
 
