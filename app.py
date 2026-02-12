@@ -132,6 +132,6 @@ if st.button('Predict Speech Accuracy'):
 
     # Plot SHAP summary plot
     st.subheader('Feature Importance Summary Plot')
-    st_shap(shap.summary_plot(shap_values[:,:,1], input_features, feature_names=feature_names_shap, plot_type="bar")
+    st_shap(shap.summary_plot(shap_values[:,:,1], input_features, feature_names=feature_names_shap, plot_type="bar"))
     #shap.summary_plot(shap_values[:,:,1], input_features, feature_names=feature_names_shap, plot_type="bar", show=False)
     #st.pyplot(plt.gcf())
