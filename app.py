@@ -120,6 +120,7 @@ if st.button('Predict Speech Accuracy'):
 
     # Display the result
     st.divider()
+    st.subheader('Speech Accuracy Prediction for this Word')
     st.write(f'Prediction: {result}')
 
     # Display the model's confidence (probability)
@@ -131,7 +132,7 @@ if st.button('Predict Speech Accuracy'):
     shap_values = explainer.shap_values(input_features)
 
     # Plot SHAP summary plot
-    st.subheader('Feature Importance Summary Plot')
+    st.subheader('Feature Importances for this Prediction')
     shap.summary_plot(shap_values[:,:,1], input_features, feature_names=feature_names_shap, plot_type="bar", show=False)
     plt.tight_layout()
     st.pyplot(plt.gcf())
