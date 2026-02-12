@@ -29,7 +29,7 @@ st.write('Word-by-word personalized predictions of naming ability in chronic pos
              
 # instructions for the user
 st.divider()
-st.subheader('Please input the information for person with aphasia')
+st.subheader('Please input the information of the person with aphasia')
 
 # Create a dictionary to hold the input values
 input_values = {}
