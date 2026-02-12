@@ -36,9 +36,9 @@ input_values = {}
 
 # Mapping feature names to user-friendly labels
 feature_labels = {
-    'MPO': 'Months Since Stroke',
-    'Yrs Edu': 'Years of Education',
-    'Age': 'Current Age in years',
+    'MPO': 'Months Since Stroke (values over six)',
+    'Yrs Edu': 'Years of Education (count from first grade)',
+    'Age': 'Current Age (values in years)',
     'NWF_WAB_Avg': 'Western Aphasia Battery Naming Subscore (0-10)',
     'Avg_WAB_AQ ': 'Western Aphasia Battery Aphasia Quotient Score (0-100)',
     'Lesion_Volume': 'Lesion Volume (range from none to entire left hemisphere)',
