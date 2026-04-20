@@ -26,6 +26,7 @@ feature_names = model.feature_names_in_
 # Streamlit app layout
 st.title('AphasiaLENS (Lexical Estimator of Naming in Speech)')
 st.write('Word-by-word personalized predictions of naming ability in chronic post stroke aphasia, using clinically available inputs and explainable machine learning')
+st.write('Disclaimer: This web application is intended for research, educational and demonstration purposes only. Please do not use it for medical advice, diagnosis, or treatment without consulting professional medical advice.')
              
 # instructions for the user
 st.divider()
