@@ -4,12 +4,11 @@ import numpy as np
 import pandas as pd
 import joblib
 import shap
-import syllapy
+import pronouncing
 import nltk
 from nltk.corpus import cmudict
 from streamlit_shap import st_shap
 import matplotlib.pyplot as plt
-nltk.download('cmudict')
 
 # Load the trained Random Forest model
 model = joblib.load('simple_rf_best_model.joblib')
@@ -91,7 +90,7 @@ if page == "Single Subject":
         elif feature == 'Syllables_avg (SyllaPy)' or feature == 'Phonemes_avg (CMUDict)':
             if word_input:
                 # Compute syllables using syllapy
-                syllables_count = syllapy.count(word_input)
+                syllables_count = pronouncing.syllable_count(word_input.lower())
                 # Compute phonemes using CMUdict
                 phonemes = cmu_dict.get(word_input.lower())
                 phonemes_count = len(phonemes[0]) if phonemes else 0
@@ -204,8 +203,8 @@ elif page == "Multiple Subjects":
             "Low"
         )
 
-        # Calculate the Syllables_avg (SyllaPy)
-        df["Syllables_avg (SyllaPy)"] = words.apply(syllapy.count)
+        # Calculate the Syllables_avg (CMU_dict)
+        df["Syllables_avg (CMU_dict)"] = words.apply(lambda w: pronouncing.syllable_count(w.lower()))
 
         def phoneme_count(w):
             ph = cmu_dict.get(w.lower())
@@ -269,8 +268,8 @@ elif page == "Feature Names Explained":
         "Avg_WAB_AQ ": ("Western Aphasia Battery Aphasia Quotient Score (0-100)", "Numeric"),
         "Lesion_Volume": ("Lesion Volume (range from none to entire left hemisphere)", "Numeric"),
         "Freq_Cond": ("Frequency Condition (High/Low)", "Derived"),
-        "Syllables_avg (SyllaPy)": ("Syllables in Word", "Derived"),
-        "Phonemes_avg (CMUDict)": ("Phonemes in Word", "Derived"),
+        "Syllables_avg (CMU_dict)": ("Syllables in Word", "Derived"),
+        "Phonemes_avg (CMU_dict)": ("Phonemes in Word", "Derived"),
     }
 
     for k, v in features.items():
