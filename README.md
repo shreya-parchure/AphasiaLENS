@@ -4,3 +4,6 @@ Aphasia Lexical Estimator of Naming in Speech - ML web app using clinically acce
 [App Link](https://aphasialens.streamlit.app)
 
 Or, https://aphasialens.streamlit.app
+
+Batch testing version:
+https://aphasialens-batchtest.streamlit.app/
