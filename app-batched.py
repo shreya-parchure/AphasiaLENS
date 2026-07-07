@@ -9,6 +9,7 @@ import nltk
 from nltk.corpus import cmudict
 from streamlit_shap import st_shap
 import matplotlib.pyplot as plt
+nltk.download('cmudict')
 
 # Load the trained Random Forest model
 model = joblib.load('simple_rf_best_model.joblib')
