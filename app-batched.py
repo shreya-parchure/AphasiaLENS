@@ -205,8 +205,14 @@ elif page == "Multiple Subjects":
             "Low"
         )
 
+        def syll_counter(w):
+            phones = pronouncing.phones_for_word(w.lower())
+            syllables_count = pronouncing.syllable_count(phones)
+            return syllables_count if syllables_count else 0
+
+            
         # Calculate the Syllables_avg (CMU_dict)
-        df["Syllables_avg (CMU_dict)"] = words.apply(lambda w: pronouncing.syllable_count(pronouncing.phones_for_word(w.lower())))
+        df["Syllables_avg (CMU_dict)"] = words.apply(syll_counter)
 
         def phoneme_count(w):
             ph = cmu_dict.get(w.lower())
