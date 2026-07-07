@@ -91,7 +91,8 @@ if page == "Single Subject":
         elif feature == 'Syllables_avg (SyllaPy)' or feature == 'Phonemes_avg (CMUDict)':
             if word_input:
                 # Compute syllables using syllapy
-                syllables_count = pronouncing.syllable_count(word_input.lower())
+                phones = pronouncing.phones_for_word(word_input.lower())
+                syllables_count = pronouncing.syllable_count(phones)
                 # Compute phonemes using CMUdict
                 phonemes = cmu_dict.get(word_input.lower())
                 phonemes_count = len(phonemes[0]) if phonemes else 0
@@ -205,7 +206,7 @@ elif page == "Multiple Subjects":
         )
 
         # Calculate the Syllables_avg (CMU_dict)
-        df["Syllables_avg (CMU_dict)"] = words.apply(lambda w: pronouncing.syllable_count(w.lower()))
+        df["Syllables_avg (CMU_dict)"] = words.apply(lambda w: pronouncing.syllable_count(pronouncing.phones_for_word(w.lower())))
 
         def phoneme_count(w):
             ph = cmu_dict.get(w.lower())
