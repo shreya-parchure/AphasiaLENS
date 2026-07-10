@@ -20,6 +20,10 @@ word_list = pd.read_csv('word_list.csv')['word'].tolist()
 # Load the CMU Pronouncing Dictionary
 cmu_dict = cmudict.dict()
 
+# initializing session state for batch output
+if "prediction_csv" not in st.session_state:
+    st.session_state.prediction_csv = None
+
 # Get the feature names from the model
 feature_names = model.feature_names_in_
 
@@ -186,29 +190,28 @@ elif page == "Batch Processing Multiple Patients and Words":
 
     # instructions for the user
     st.divider()
-    st.subheader('Please upload a CSV file of all trials')
+    st.subheader('Please upload a CSV file of all target words')
 
     # Download template
     # Random example values
     template = pd.DataFrame({
-        "Subject": ["SubjID-1"],
-        "Word": ["apple"],
+        "Word": ["apple", "dog", "tree"],
     })
 
-    # Trial csv for download
+    # Word csv for download
     st.download_button(
-        "Download Template of Trials CSV",
+        "Download Template of Words CSV",
         template.to_csv(index=False),
-        "trial_data.csv",
+        "word_data.csv",
         "text/csv"
     )
 
-    uploaded_trial_file = st.file_uploader("Upload Trial CSV", type=["csv"])
+    uploaded_word_file = st.file_uploader("Upload Words CSV", type=["csv"])
 
     st.divider()
 
     # Only enable button when both files have been uploaded
-    can_predict = (uploaded_clinical_file is not None and uploaded_trial_file is not None)
+    can_predict = (uploaded_clinical_file is not None and uploaded_word_file is not None)
 
     # Check for errors in the uploaded files
     error = False
@@ -217,24 +220,24 @@ elif page == "Batch Processing Multiple Patients and Words":
     if st.button("Predict Speech Accuracy", disabled=not can_predict):
 
         clinical_dataset = pd.read_csv(uploaded_clinical_file)
-        trial_dataset = pd.read_csv(uploaded_trial_file)
+        word_dataset = pd.read_csv(uploaded_word_file)
         required_clinical_columns = ['Subject', 'MPO', 'Yrs Edu', 'Age', 'NWF_WAB_Avg', 'Avg_WAB_AQ ', 'Lesion_Volume']
-        required_trial_columns = ['Subject', 'Word']
+        required_word_columns = ['Word']
 
         # Missing Values
         if clinical_dataset.isna().any().any():
             st.warning("Missing values detected in the clinical dataset.")
             error = True
-        if trial_dataset.isna().any().any():
-            st.warning("Missing values detected in the trial dataset.")
+        if word_dataset.isna().any().any():
+            st.warning("Missing values detected in the word dataset.")
             error = True
 
         # Negative Values
         if (clinical_dataset.select_dtypes(include='number') < 0).any().any():
             st.warning("Negative values detected in the clinical dataset.")
             error = True
-        if (trial_dataset.select_dtypes(include='number') < 0).any().any():
-            st.warning("Negative values detected in the trial dataset.")
+        if (word_dataset.select_dtypes(include='number') < 0).any().any():
+            st.warning("Negative values detected in the word dataset.")
             error = True
         
         # Check for missing clinical columns
@@ -243,10 +246,10 @@ elif page == "Batch Processing Multiple Patients and Words":
             st.warning(f"Missing required columns in the clinical dataset: {', '.join(missing_clinical_columns)}.")
             error = True
 
-        # Check for missing trial columns
-        missing_trial_columns = [col for col in required_trial_columns if col not in trial_dataset.columns]
-        if missing_trial_columns:
-            st.warning(f"Missing required columns in the trial dataset: {', '.join(missing_trial_columns)}.")
+        # Check for missing word columns
+        missing_word_columns = [col for col in required_word_columns if col not in word_dataset.columns]
+        if missing_word_columns:
+            st.warning(f"Missing required columns in the word dataset: {', '.join(missing_word_columns)}.")
             error = True
 
         # Check for extra clinical columns
@@ -255,19 +258,10 @@ elif page == "Batch Processing Multiple Patients and Words":
             st.warning(f"Unexpected extra columns found in the clinical dataset: {', '.join(extra_clinical_columns)}.")
             error = True
 
-        # Check for extra trial columns
-        extra_trial_columns = [col for col in trial_dataset.columns if col not in required_trial_columns]
-        if extra_trial_columns:
-            st.warning(f"Unexpected extra columns found in the trial dataset: {', '.join(extra_trial_columns)}.")
-            error = True
-
-        # Check that all subjects in trials have a corresponding name in clinical data
-        trial_subjects = set(trial_dataset['Subject'])
-        clinical_subjects = set(clinical_dataset['Subject'])
-
-        if not trial_subjects.issubset(clinical_subjects):
-            missing_subjects = trial_subjects - clinical_subjects
-            st.warning(f"The following subjects in the trial dataset are missing from the clinical dataset: {', '.join(map(str, missing_subjects))}")
+        # Check for extra word columns
+        extra_word_columns = [col for col in word_dataset.columns if col not in required_word_columns]
+        if extra_word_columns:
+            st.warning(f"Unexpected extra columns found in the word dataset: {', '.join(extra_word_columns)}.")
             error = True
 
         # Check that all columns except 'Subject' in clinical data are numerical
@@ -278,8 +272,13 @@ elif page == "Batch Processing Multiple Patients and Words":
             st.warning(f"The following clinical columns contain non-numerical data: {', '.join(non_numeric_clinical_cols)}.")
             error = True
 
-        # Dataset of clinical and trial data merged on Subject ID
-        X_clin_ling = clinical_dataset.merge(trial_dataset, on='Subject', how='inner')
+        # Dataset of all words for all subjects
+        X_clin_ling = clinical_dataset.copy()
+        X_clin_ling = X_clin_ling.merge(word_dataset, how='cross')
+
+        # Move word column next to subject column
+        X_clin_ling.insert((X_clin_ling.columns.get_loc('Subject') + 1), 'Word', X_clin_ling.pop('Word'))
+        
         # remove any leading/trailing whitespace and convert to lowercase
         X_clin_ling['Word'] = X_clin_ling['Word'].str.lower().str.strip()
 
@@ -326,32 +325,37 @@ elif page == "Batch Processing Multiple Patients and Words":
         predictions = model.predict(X_pred_all)
         probabilities = model.predict_proba(X_pred_all)
             
-        pred_y = X_clin_ling
+        pred_y = X_clin_ling.copy()
 
         # Assign prediction results and model confidence back to the dataframe efficiently
         pred_y['Prediction'] = ["Correct" if p == 1 else "Wrong" for p in predictions]
+        pred_y['Binary_Prediction'] = predictions
         pred_y['Model Confidence (Probability)'] = [
             f"{prob[pred]:.4f}" for prob, pred in zip(probabilities, predictions)
         ]
+        pred_y['Correct Probability'] = probabilities[:, 1]
 
+        # Store results in session state
+        st.session_state.prediction_results = pred_y
+        st.session_state.prediction_csv = pred_y.to_csv(index=False)
+
+    # Only show the preview and download button if the data exists in session_state
+    if st.session_state.prediction_csv is not None:
         st.divider()
 
-        # Preview of the predictions
         st.subheader('Preview of Predictions (Top 5 Rows)')
-        st.dataframe(pred_y.head(5))
+        st.dataframe(st.session_state.prediction_results.head(5))
 
         st.divider()
 
         st.subheader('Download Predictions CSV')
-
-        # Convert DataFrame to CSV
-        csv_pred_y = pred_y.to_csv(index=False)
         st.download_button(
             label="Download Predictions as CSV",
-            data=csv_pred_y,
+            data=st.session_state.prediction_csv,
             file_name="Predicted_Results.csv",
             mime="text/csv"
         )
+
 
 
 # Full feature names explained
@@ -359,22 +363,31 @@ elif page == "Input Features Documentation":
 
     st.title("Feature Names Explained")
 
-    features = {
-        "Subject": ("Subject ID", "String"),
-        "Word": ("Predicted Word", "String"),
-        "MPO": ("Months Since Stroke", "Numeric"),
-        "Yrs Edu": ("Years of Education (counted from first grade)", "Numeric"),
-        "Age": ("Current Age (in years, range 35-95)", "Numeric"),
-        "NWF_WAB_Avg": ("Western Aphasia Battery Naming Subscore (0-10)", "Numeric"),
-        "Avg_WAB_AQ ": ("Western Aphasia Battery Aphasia Quotient Score (0-100)", "Numeric"),
-        "Lesion_Volume": ("Lesion Volume (range from none to entire left hemisphere)", "Numeric"),
-        "Freq_Cond": ("Frequency Condition (High/Low)", "Derived"),
-        "Syllables_avg (CMU_dict)": ("Syllables in Word", "Derived"),
-        "Phonemes_avg (CMU_dict)": ("Phonemes in Word", "Derived"),
-    }
+    st.subheader("Subject")
+    st.write("Unique identifier for each subject (String)")
 
-    for k, v in features.items():
-        st.markdown(f"**{k}**")
-        st.write(f"- Full Name: {v[0]}")
-        st.write(f"- Type: {v[1]}")
-        st.divider()
+    st.subheader("Word")
+    st.write("Word to be predicted for naming accuracy (String)")
+
+    st.subheader("MPO")
+    st.write("Months Since Stroke (Numeric)")
+
+    st.subheader("Yrs Edu")
+    st.write("Years of Education (counted from first grade) (Numeric)")
+
+    st.subheader("Age")
+    st.write("Current Age (in years, range 35-95) (Numeric)")
+
+    st.subheader("NWF_WAB_Avg")
+    st.write("Western Aphasia Battery Naming Subscore (0-10) (Numeric)")
+
+    st.subheader("Avg_WAB_AQ ")
+    st.write("Western Aphasia Battery Aphasia Quotient Score (0-100) (Numeric)")
+
+    st.subheader("Lesion_Volume")
+    st.write("Lesion Volume (range from none (0 mm^3 )to entire left hemisphere (500,000 mm^3) (Numeric)")
+
+    st.subheader("Follow linguistic features are automatically calculated in backend:")
+    st.write("Freq_Cond - Frequency of target word in English (high/low)")
+    st.write("Syllables_avg (CMU_dict) - Number of Syllables in the target word")
+    st.write("Phonemes_avg (CMU_dict) - Number of Phonemes in the target word")
