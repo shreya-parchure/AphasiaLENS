@@ -9,6 +9,7 @@ import nltk
 from nltk.corpus import cmudict
 from streamlit_shap import st_shap
 import matplotlib.pyplot as plt
+nltk.download('cmudict')
 
 # Load the trained Random Forest model
 model = joblib.load('simple_rf_best_model.joblib')
@@ -23,26 +24,15 @@ cmu_dict = cmudict.dict()
 feature_names = model.feature_names_in_
 
 # Simple sidebar
-st.sidebar.title("AphasiaLENS Menu")
+st.sidebar.title("App versions menu")
 
 page = st.sidebar.radio(
     "Navigate",
     ["Single Subject", "Multiple Subjects", "Feature Names Explained"]
 )
 # Single Subject Page
-if page == "Single Subject":
-    # Load the trained Random Forest model
-    model = joblib.load('simple_rf_best_model.joblib')
-
-    # Load the backend list of words for Freq_Cond calculation
-    word_list = pd.read_csv('word_list.csv')['word'].tolist()
-
-    # Load the CMU Pronouncing Dictionary
-    cmu_dict = cmudict.dict()
-
-    # Get the feature names from the model
-    feature_names = model.feature_names_in_
-
+if page == "Single Subject Demo with Explainability":
+    
     # Streamlit app layout
     st.title('AphasiaLENS (Lexical Estimator of Naming in Speech)')
     st.write('Word-by-word personalized predictions of naming ability in chronic post stroke aphasia, using clinically available inputs and explainable machine learning')
@@ -161,21 +151,11 @@ if page == "Single Subject":
         st.pyplot(plt.gcf())
 
 # Batched Version of App (without shap plots)
-elif page == "Multiple Subjects":
-    # Load the trained Random Forest model
-    model = joblib.load('simple_rf_best_model.joblib')
-
-    # Load the backend list of words for Freq_Cond calculation
-    word_list = pd.read_csv('word_list.csv')['word'].tolist()
-
-    # Load the CMU Pronouncing Dictionary
-    cmu_dict = cmudict.dict()
-
-    # Get the feature names from the model
-    feature_names = model.feature_names_in_
-
+elif page == "Batch Processing Multiple PWA and Multiple Words":
+    
     # Streamlit app layout
     st.title('Batched Version of AphasiaLENS')
+    st.write('Generate model predictions of word-level accuracy and prediction probability, for large lists of patients and words at once.')
     st.write('Disclaimer: This web application is intended for research, education, and demo purposes. Please do not use it for medical advice, diagnosis, or treatment without consulting professional medical advice.')
                 
     # instructions for the user
