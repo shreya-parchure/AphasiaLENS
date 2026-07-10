@@ -28,7 +28,7 @@ st.sidebar.title("App versions menu")
 
 page = st.sidebar.radio(
     "Navigate",
-    ["Single Subject", "Multiple Subjects", "Feature Names Explained"]
+    ["Single Subject Demo with Explainability", "Batch Processing Multiple Patients and Words", "Input Features Documentation"]
 )
 # Single Subject Page
 if page == "Single Subject Demo with Explainability":
@@ -151,7 +151,7 @@ if page == "Single Subject Demo with Explainability":
         st.pyplot(plt.gcf())
 
 # Batched Version of App (without shap plots)
-elif page == "Batch Processing Multiple PWA and Multiple Words":
+elif page == "Batch Processing Multiple Patients and Words":
     
     # Streamlit app layout
     st.title('Batched Version of AphasiaLENS')
@@ -355,7 +355,7 @@ elif page == "Batch Processing Multiple PWA and Multiple Words":
 
 
 # Full feature names explained
-elif page == "Feature Names Explained":
+elif page == "Input Features Documentation":
 
     st.title("Feature Names Explained")
 
