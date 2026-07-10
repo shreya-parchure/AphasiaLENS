@@ -18,7 +18,7 @@ pandas==2.3.0
 scikit-learn==1.7.0
 scipy==1.14.1
 
-setuptools==82.0.1
+setuptools==80.9.0
 wheel==0.46.3
 
 shap==0.50.0
