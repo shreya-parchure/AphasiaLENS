@@ -274,7 +274,7 @@ elif page == "Batch Processing Multiple Patients and Words":
 
         # Check for weird characters in the Word column
         if 'Word' in word_dataset.columns:
-            invalid_words_mask = X_clin_ling['Word'].astype(str).str.contains(r'[^a-zA-Z]', regex=True)
+            invalid_words_mask = word_dataset['Word'].astype(str).str.contains(r'[^a-zA-Z]', regex=True)
             if invalid_words_mask.any():
                 invalid_samples = word_dataset.loc[invalid_words_mask, 'Word'].unique()
                 st.warning("Invalid characters (spaces, punctuation, or numbers) detected in the 'Word' column.")
