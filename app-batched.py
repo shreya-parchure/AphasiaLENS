@@ -272,6 +272,17 @@ elif page == "Batch Processing Multiple Patients and Words":
             st.warning(f"The following clinical columns contain non-numerical data: {', '.join(non_numeric_clinical_cols)}.")
             error = True
 
+        # Check for weird characters in the Word column
+        if 'Word' in word_dataset.columns:
+            invalid_words_mask = X_clin_ling['Word'].astype(str).str.contains(r'[^a-zA-Z]', regex=True)
+            if invalid_words_mask.any():
+                invalid_samples = word_dataset.loc[invalid_words_mask, 'Word'].unique()
+                st.warning("Invalid characters (spaces, punctuation, or numbers) detected in the 'Word' column.")
+                error = True
+
+        if error:
+            st.stop()
+            
         # Dataset of all words for all subjects
         X_clin_ling = clinical_dataset.copy()
         X_clin_ling = X_clin_ling.merge(word_dataset, how='cross')
@@ -281,18 +292,7 @@ elif page == "Batch Processing Multiple Patients and Words":
         
         # remove any leading/trailing whitespace and convert to lowercase
         X_clin_ling['Word'] = X_clin_ling['Word'].str.lower().str.strip()
-
-        # Check for weird characters in the Word column
-        if 'Word' in X_clin_ling.columns:
-            invalid_words_mask = X_clin_ling['Word'].astype(str).str.contains(r'[^a-zA-Z]', regex=True)
-            if invalid_words_mask.any():
-                invalid_samples = X_clin_ling.loc[invalid_words_mask, 'Word'].unique()
-                st.warning("Invalid characters (spaces, punctuation, or numbers) detected in the 'Word' column.")
-                error = True
-
-        if error:
-            st.stop()
-
+        
         # Columns for derived features
         freq_cond_list = []
         syllables_list = []
