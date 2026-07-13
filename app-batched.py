@@ -387,7 +387,7 @@ elif page == "Input Features Documentation":
     st.subheader("Lesion_Volume")
     st.write("Lesion Volume (range from none (0 mm^3 )to entire left hemisphere (500,000 mm^3) (Numeric)")
 
-    st.subheader("Follow linguistic features are automatically calculated in backend:")
+    st.subheader("These linguistic features are automatically calculated for each given word:")
     st.write("Freq_Cond - Frequency of target word in English (high/low)")
     st.write("Syllables_avg (CMU_dict) - Number of Syllables in the target word")
     st.write("Phonemes_avg (CMU_dict) - Number of Phonemes in the target word")
